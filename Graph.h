@@ -14,6 +14,7 @@ public:
     void createMatrix();
     void showNames() const;
     void getFriends(std::string & name);
+    void walk(int start, int puth, bool* visited, int* numPuth);
 private:
     bool edgeExists(int v1, int v2);
     bool vertexExists(int v);

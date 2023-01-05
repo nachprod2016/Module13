@@ -125,62 +125,56 @@ void Graph::showNames() const
 
 void Graph::getFriends(std::string & name)
 {
-    int veryBig = 1000;
-    int distances[vertexCount];
-    for (int i = 0; i < vertexCount; i++) // инициализация меток
-    {
-        distances[i] = veryBig;
-    }
-    int fromVert = -1;
+    int start = -1;
     for (int i = 0; i < vertexCount; i++)
     {
         if (name == names[i])
         {
-            fromVert = i;
+            start = i;
             break;
         }
     }
-    if (fromVert == -1)
+    if (start == -1)
     {
         return;
     }
-    distances[fromVert] = 0;
-    bool passed[vertexCount];
+    int puth = 0;
+    bool visited[vertexCount];
+    int numPuth[vertexCount];
     for (int i = 0; i < vertexCount; i++)
     {
-        passed[i] = false; // все неокрашены изначально
+        visited[i] = false;
+        numPuth[i] = 1000;
     }
-    int currentVertexNum = fromVert;
-    int min_dist = 0;
-    while(min_dist != veryBig)
-    {
-        passed[currentVertexNum] = true;
-        for(int i = 0; i < vertexCount; i++)
-        {
-            // для смежных ребер пересчитываем метки
-            if(edgeExists(currentVertexNum,i)
-               && distances[currentVertexNum] + matrix[currentVertexNum][i] < distances[i])
-                    distances[i] = 
-                      distances[currentVertexNum] + matrix[currentVertexNum][i];
-        }
-        min_dist = veryBig;
-        for(int i = 0; i< vertexCount; i++)
-        {
-            // выбираем новую текущую вершину
-            if (vertexExists(i) && !passed[i] && distances[i] < min_dist) // выбор новой вершины
-            {
-                min_dist = distances[i];
-                currentVertexNum = i;
-            }
-        }
-    }
+    walk(start, puth, visited, numPuth);
     std::cout << "Друзья " << name << ": ";
-    for(int i=0; i<vertexCount; i++) // вывод результата
+    for (int i = 0; i < vertexCount; i++)
     {
-        if (distances[i] < 4 && i != fromVert)
+        if (numPuth[i] < 4 && start != i)
         {
             std::cout << names[i] << " ";
         }
     }
     std::cout << std::endl;
+}
+
+void Graph::walk(int start, int puth, bool* visited, int* numPuth)
+{
+    bool c_visited[vertexCount];
+    for (int i = 0; i < vertexCount; i++)
+    {
+        c_visited[i] = visited[i];
+    }
+    if (numPuth[start] > puth)
+    {
+        numPuth[start] = puth;
+    }
+    c_visited[start] = true;
+    for (int i = 0; i < vertexCount; i++)
+    {
+        if (matrix[start][i] != 0 && c_visited[i] == false)
+        {
+            walk(i, puth + 1, c_visited, numPuth);
+        }
+    }
 }
